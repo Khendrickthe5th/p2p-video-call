@@ -1,11 +1,13 @@
 import './App.css';
 import Main from "./pages/Main"
+import {Routes, Route, BrowserRouter as Router} from "react-router-dom"
+
 
 function App() {
   return (
-    <div className="App">
+    <section className="App">
       <Main />
-    </div>
+    </section>
   );
 }
 
