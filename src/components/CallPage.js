@@ -40,6 +40,7 @@ socket.on("answer", async(payload)=>{
     })
 })
 
+
 // socket listeners for offers
 socket.on("offer", async(payload)=>{
 
@@ -47,31 +48,31 @@ socket.on("offer", async(payload)=>{
   if(acceptOffer){
   peerConnection.current = new RTCPeerConnection(config)
   remoteCandidates.length = 0
-  console.log("creating an answer ===>", peerConnection.current, "he created it ==>", username)
 
+          
   // An event listener that triggers when on each candidate discovery
   peerConnection.current.onicecandidate = (event)=>{
     if(event.candidate){
-
-          remoteCandidates.current.push(event.candidate)
+        remoteCandidates.current.push(event.candidate)
     }}
   
+const remoteVideo = document.querySelector('.remoteVideo');
+    peerConnection.current.addEventListener('track', async(event) => {
+    console.log("madooooooooo")
+    const [remoteStream] = event.streams;
+    remoteVideo.srcObject = remoteStream;
+    });
+
   peerConnection.current.setRemoteDescription(new RTCSessionDescription(payload.offer))
   let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true})
       document.querySelector('.localVideo').srcObject = stream
       stream.getTracks().forEach((track)=>{
-          console.log("Adding track boyy...")
+          // console.log("Adding track boyy...")
           peerConnection.current.addTrack(track, stream)
       })
+
   const answer = await peerConnection.current.createAnswer()
   await peerConnection.current.setLocalDescription(answer)
-  
-  const remoteVideo = document.querySelector('.remoteVideo');
-      peerConnection.current.addEventListener('track', async (event) => {
-      console.log("bro just added remote stream...")
-      const [remoteStream] = event.streams;
-      remoteVideo.srcObject = remoteStream;
-          });
 
   socket.emit("answer", {answer: answer, senderID: username, receiverID:  payload.senderID})
   }
@@ -92,27 +93,36 @@ console.log("creating an offer ===>", peerConnection.current, "he created it ==>
         if(event.candidate){
             localCandidates.current.push(event.candidate)
         }}
-    
-const offer = await peerConnection.current.createOffer({
-    offerToReceiveAudio: true,
-    offerToReceiveVideo: true
-    })
-await peerConnection.current.setLocalDescription(offer)
-      
-let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true})
-    document.querySelector('.localVideo').srcObject = stream
-    stream.getTracks().forEach((track)=>{
-          console.log("Adding track boyy...")
-          peerConnection.current.addTrack(track, stream)
-      })
-socket.emit("offer", {offer: offer, senderID: username, receiverID: receiverID})
-      
+
 const remoteVideo = document.querySelector('.remoteVideo');
       peerConnection.current.addEventListener('track', async (event) => {
       console.log("bro just added remote stream")
       const [remoteStream] = event.streams;
       remoteVideo.srcObject = remoteStream;
           });
+
+let stream = await navigator.mediaDevices.getUserMedia({video: true, audio: true})
+    document.querySelector('.localVideo').srcObject = stream
+    stream.getTracks().forEach((track)=>{
+          console.log("Adding track boyy...")
+          peerConnection.current.addTrack(track, stream)
+      })
+
+const offer = await peerConnection.current.createOffer({
+    offerToReceiveAudio: true,
+    offerToReceiveVideo: true
+    })
+// await peerConnection.current.setLocalDescription(offer)
+      
+await peerConnection.current.setLocalDescription(offer)
+socket.emit("offer", {offer: offer, senderID: username, receiverID: receiverID})
+      
+// const remoteVideo = document.querySelector('.remoteVideo');
+//       peerConnection.current.addEventListener('track', async (event) => {
+//       console.log("bro just added remote stream")
+//       const [remoteStream] = event.streams;
+//       remoteVideo.srcObject = remoteStream;
+//           });
       }
 
 
