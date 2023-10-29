@@ -1,4 +1,3 @@
-require("dotenv").config()
-import {io} from "socket.io-client"
-const HOST = preocess.env.SERVER_PORT
-export const socket = io(HOST, {autoConnect: false}) 
+import socketIO from 'socket.io-client'
+const PORT = 3100
+export const socket = socketIO.connect(`http://localhost:${PORT}`)

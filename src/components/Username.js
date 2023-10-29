@@ -1,13 +1,20 @@
 import "./Username.css"
 import { useRef } from "react"
 import {Link} from "react-router-dom"
+import {socket} from "../socket.js"
 
 function Username({setUsername}){
     const usernameVal = useRef()
 
     const setUsernameAndGetUpdates = async()=>{
-        setUsername(usernameVal.current.value)
-    }
+        if(usernameVal.current.value !== ""){
+          console.log("submit username button was clicked")
+          socket.emit("username",  usernameVal.current.value)
+          setUsername(usernameVal.current.value)
+          usernameVal.current.value = ""
+        }
+      }
+      
 
     return(
         <section>
